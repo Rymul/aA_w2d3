@@ -9,14 +9,15 @@ require "byebug"
 
 
 class Board
-
+    attr_reader :n
     def initialize(n)
         @grid = Array.new(n) {Array.new(n, '_')} #will later change 3 to n
+        @n = n
     end
 
     def valid?(position)
         row, col = position
-        if (row < 3 && col < 3) && (row >= 0 && col >= 0)
+        if (row < n && col < n) && (row >= 0 && col >= 0)
             return true
         else
             return false
@@ -33,12 +34,17 @@ class Board
     end
 
     def place_mark(position, mark)
-        row, col = position
-        if self.valid?(position) && self.empty?(position)
-            @grid[row][col] = mark
-        else
-            raise 'That is an invalid position or is already marked!'
-        end
+        # begin
+            row, col = position
+            if self.valid?(position) && self.empty?(position)
+                @grid[row][col] = mark
+            else
+                raise 'That is an invalid position or is already marked!'
+            end
+        # rescue RuntimeError => e
+        #     puts e.message
+        # retry
+        # end
     end
 
     def print
@@ -46,6 +52,7 @@ class Board
         puts
         @grid.each_with_index do |subarr, i|
             if i == (subarr.length - 1)
+                
                 n_sub = subarr.map do |ele|
                     if ele == '_'
                         ele = ' '
@@ -53,10 +60,10 @@ class Board
                         ele
                     end
                 end
-                puts ' ' + n_sub.join(' | ') + ' ' #subarr[2]
+                puts ' ' + n_sub.join(' | ') + ' '
             else
 
-                puts '_' + subarr.join('_|_') + '_' #subarr[0 and 1]
+                puts '_' + subarr.join('_|_') + '_'
             end
             # puts '_' + subarr.join('_|_') + '_'
         end
@@ -65,14 +72,14 @@ class Board
     end
         
     def win_row?(mark)
-        if @grid.any? { |row| row.uniq == [mark] } 
+        if @grid.any? {|row| row.uniq == [mark] }
             return true
         end
         false
     end
 
     def win_col?(mark)
-        if @grid.transpose.any? { |col| col.uniq == [mark] }
+        if @grid.transpose.any? {|col| col.uniq == [mark] }
             return true
         end
         false
@@ -132,6 +139,7 @@ end
 # p b = Board.new 
 # b.place_mark([0, 0], :X)
 # b.place_mark([1, 0], :X)
+# # debugger
 # b.place_mark([2, 0], :X)
 
 # p b
